@@ -3,6 +3,16 @@ from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 from database import Base
 
+class Cliente(Base):
+    __tablename__ = 'clientes'
+    
+    id = Column(Integer, primary_key=True, autoincrement=True )
+    nombre = Column(String, nullable=False)
+    apellido = Column(String, nullable=False)
+    email = Column(String, nullable=False)
+    telefono = Column(String, nullable=False)
+    direccion = Column(String, nullable=False)
+
 class Pedido(Base):
     __tablename__ = 'pedidos'
     
@@ -26,3 +36,4 @@ class Menu(Base):
     precio = Column(Integer, nullable=False)
     icono_path = Column(String, nullable=True)
     ingredientes = relationship("ingrediente", secondary="ingrediente_menu", back_populates="menus")
+
