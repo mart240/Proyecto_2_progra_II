@@ -279,7 +279,6 @@ class AplicacionConPestanas(ctk.CTk):
         except Exception as e:
             CTkMessagebox(title="Error", message=f"No se pudo mostrar la boleta.\n{e}", icon="warning")
 
-
     def configurar_pestana1(self):
         # Dividir la Pestaña 1 en dos frames
         frame_formulario = ctk.CTkFrame(self.tab1)
@@ -443,7 +442,6 @@ class AplicacionConPestanas(ctk.CTk):
             CTkMessagebox(title="Boleta Generada", message=mensaje, icon="info")
         except Exception as e:
             CTkMessagebox(title="Error", message=f"No se pudo generar la boleta.\n{e}", icon="warning")
-
 
     def configurar_pestana2(self):
         frame_superior = ctk.CTkFrame(self.tab2)

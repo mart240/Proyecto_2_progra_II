@@ -48,7 +48,7 @@ def get_default_menus() -> List[IMenu]:
             [
                 Ingrediente("Panqueques","unidad", 2),
                 Ingrediente("Manjar","unidad", 1),
-                Ingrediente("Azucar Flor","unidad", 1),
+                Ingrediente("Azucar flor","unidad", 1),
             ],
             precio=2000,
             icono_path="IMG/icono_panqueques_64x64.png",
@@ -56,7 +56,7 @@ def get_default_menus() -> List[IMenu]:
         CrearMenu(
             "Pollo frito",
             [
-                Ingrediente("Presa De Pollo","unidad", 1),
+                Ingrediente("Presa de pollo","unidad", 1),
                 Ingrediente("Harina","unidad", 1),
                 Ingrediente("Aceite","unidad", 1),
             ],
@@ -73,7 +73,7 @@ def get_default_menus() -> List[IMenu]:
             precio=1500,
             icono_path="IMG/ensalada_mixta_64x64.png",
         ),
-         CrearMenu(
+        CrearMenu(
             "Coca cola",
             [
                 Ingrediente("Coca cola", "unidad", 1),
@@ -84,7 +84,7 @@ def get_default_menus() -> List[IMenu]:
         CrearMenu(
             "Chorrillana",
             [
-                Ingrediente("Carne", "unidad", 1),
+                Ingrediente("Carne", "unidad", 4),
                 Ingrediente("Cebolla", "unidad", 1),
                 Ingrediente("Papas", "unidad", 6),
                 Ingrediente("Huevos", "unidad", 2),
@@ -93,13 +93,14 @@ def get_default_menus() -> List[IMenu]:
             icono_path="IMG/icono_chorrillana_64x64.png",
         ), 
         CrearMenu(
-            "Empanada queso",
+            "Empanada",
             [
+                Ingrediente("Carne", "unidad", 1),
+                Ingrediente("Cebolla", "unidad", 1),
                 Ingrediente("Masa de empanada", "unidad", 1),
-                Ingrediente("Queso", "unidad", 1),
+                Ingrediente("Huevos", "unidad", 2),
             ],
             precio=2200,
             icono_path="IMG/icono_empanada_queso_64x64.png",
         )
-
     ]
