@@ -65,9 +65,15 @@ class AplicacionConPestanas(ctk.CTk):
         if selected_tab == "Carta restorante":
             self.actualizar_treeview()  # actualiza el treeview para ver la carta
             print('Carta restorante')
+        if selected_tab == "Cliente":
+            self.actualizar_treeview()  # actualiza el treeview para ver el registro
+            print('Cliente')
         if selected_tab == "Boleta":
             self.actualizar_treeview()  # actualiza el treeview para ver la boleta
             print('Boleta')       
+        if selected_tab == "Graficos":
+            self.actualizar_treeview()  # actualiza el treeview para ver los graficos   
+            print('Graficos')
 
     def crear_pestanas(self):
         # se crean las pestañas(tabview) y se asocian las funciones que se ejecutan cuando cambie de pestaña
@@ -75,7 +81,9 @@ class AplicacionConPestanas(ctk.CTk):
         self.tab1 = self.tabview.add("Stock")
         self.tab4 = self.tabview.add("Carta restorante")  
         self.tab2 = self.tabview.add("Pedido")
+        self.tab6 = self.tabview.add("Cliente")
         self.tab5 = self.tabview.add("Boleta")
+        self.tab7 = self.tabview.add("Graficos")
         
         # se llama a las funciones que se ejecutan cuando cambie de pestaña
         self.configurar_pestana1()
@@ -83,6 +91,8 @@ class AplicacionConPestanas(ctk.CTk):
         self.configurar_pestana3()
         self._configurar_pestana_crear_menu()
         self._configurar_pestana_ver_boleta()
+        self._configurar_pestana_cliente()
+        self._configurar_pestana_ver_graficos()
 
     def configurar_pestana3(self):
         
@@ -239,6 +249,27 @@ class AplicacionConPestanas(ctk.CTk):
         except Exception as e:
             # Muestra un mensaje de error si hay algún error
             CTkMessagebox(title="Error", message=f"No se pudo generar/mostrar la carta.\n{e}", icon="warning")
+
+
+    def _configurar_pestana_cliente(self):
+        contenedor = ctk.CTkFrame(self.tab6)
+        contenedor.pack(expand=True, fill="both", padx=10, pady=10)
+
+        frame_treeview = ctk.CTkFrame(self.tab6)
+        frame_treeview.pack(side="left", fill="both", expand=True, padx=10, pady=10)
+
+        label_nombre = ctk.CTkLabel(contenedor, text="Nombre:")
+        label_nombre.pack(pady=10)
+        self.entry_nombre = ctk.CTkEntry(contenedor)
+        self.entry_nombre.pack(pady=10)
+
+        lebel_email = ctk.CTkLabel(contenedor, text="Email:")
+        lebel_email.pack(pady=10)
+        self.entry_email = ctk.CTkEntry(contenedor)
+        self.entry_email.pack(pady=10)
+
+        self.tree.heading("Nombre", text="Nombre")
+        self.tree.pack(expand=True, fill="both", padx=10, pady=10)
 
     def _configurar_pestana_ver_boleta(self):
         contenedor = ctk.CTkFrame(self.tab5)
@@ -472,6 +503,10 @@ class AplicacionConPestanas(ctk.CTk):
 
         self.boton_generar_boleta=ctk.CTkButton(frame_inferior,text="Generar Boleta",command=self.generar_boleta)
         self.boton_generar_boleta.pack(side="bottom",pady=10)
+
+    def _configurar_pestana_ver_graficos(self):
+        contenedor = ctk.CTkFrame(self.tab7)
+        contenedor.pack(expand=True, fill="both", padx=10, pady=10)
 
     def crear_tarjeta(self, menu):
         cols = 6
