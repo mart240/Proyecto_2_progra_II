@@ -122,10 +122,10 @@ class AplicacionConPestanas(ctk.CTk):
         self.entry_cantidad = ctk.CTkEntry(frame_cantidad)
         self.entry_cantidad.pack(pady=5)
 
-        self.boton_agregar = ctk.CTkButton(frame_superior, text="Agregar Ingrediente", command=self.agregar_ingrediente)
+        self.boton_agregar = ctk.CTkButton(frame_superior, text="Agregar Ingrediente", command=self.agregar_ingrediente, fg_color="green")
         self.boton_agregar.pack(pady=10)    
 
-        self.boton_eliminar = ctk.CTkButton(frame_superior, text="Eliminar Ingrediente", command=self.eliminar_ingrediente)
+        self.boton_eliminar = ctk.CTkButton(frame_superior, text="Eliminar Ingrediente", command=self.eliminar_ingrediente, fg_color="red")
         self.boton_eliminar.pack(pady=10)
 
         # Frame inferior para el Treeview
@@ -257,10 +257,10 @@ class AplicacionConPestanas(ctk.CTk):
         self.boton_añadir = ctk.CTkButton(contenedor, text="Añadir al pedido", command=self.Añadir_pedido)
         self.boton_añadir.pack(pady=10) 
 
-        self.boton_eliminar = ctk.CTkButton(contenedor, text="Eliminar pedido", command=self.eliminar_pedido)
+        self.boton_eliminar = ctk.CTkButton(contenedor, text="Eliminar pedido", command=self.eliminar_pedido, fg_color="red")
         self.boton_eliminar.pack(pady=10)
         
-        self.boton_finalizar = ctk.CTkButton(contenedor, text="Finalizar pedido", command=self.finalizar_pedido)
+        self.boton_finalizar = ctk.CTkButton(contenedor, text="Finalizar pedido", command=self.finalizar_pedido, fg_color="green")
         self.boton_finalizar.pack(pady=10)
 
         # Frame inferior para el Treeview
@@ -324,13 +324,13 @@ class AplicacionConPestanas(ctk.CTk):
         self.combo_unidad.pack()
 
         # Botones
-        self.boton_crear_cliente = ctk.CTkButton(frame_nombre_col, text="Crear Cliente", command=self.Crar_cliente)
+        self.boton_crear_cliente = ctk.CTkButton(frame_nombre_col, text="Crear Cliente", command=self.Crar_cliente, fg_color="green")
         self.boton_crear_cliente.pack(pady=10)
 
         self.boton_editar_cliente = ctk.CTkButton(frame_email_col, text="Editar Cliente", command=self.Editar_cliente)
         self.boton_editar_cliente.pack(pady=10)
 
-        self.boton_eliminar_cliente = ctk.CTkButton(frame_unidad_col, text="Eliminar Cliente", command=self.Eliminar_cliente)
+        self.boton_eliminar_cliente = ctk.CTkButton(frame_unidad_col, text="Eliminar Cliente", command=self.Eliminar_cliente, fg_color="red")
         self.boton_eliminar_cliente.pack(pady=10)
 
         # Frame inferior para el Treeview
@@ -404,10 +404,10 @@ class AplicacionConPestanas(ctk.CTk):
         self.boton_editar = ctk.CTkButton(frame_formulario, text="Editar Menu", command=self.editar_menu)
         self.boton_editar.pack(side = "left", pady=10, padx=10)
 
-        self.boton_eliminar = ctk.CTkButton(frame_formulario, text="Eliminar Menu", command=self.eliminar_menu)
+        self.boton_eliminar = ctk.CTkButton(frame_formulario, text="Eliminar Menu", command=self.eliminar_menu, fg_color="red")
         self.boton_eliminar.pack(side = "left", pady=10, padx=10)
 
-        self.nueva_menu = ctk.CTkButton(frame_formulario, text="Nueva Menu", command=self.crear_menu)
+        self.nueva_menu = ctk.CTkButton(frame_formulario, text="Nueva Menu", command=self.crear_menu, fg_color="green")
         self.nueva_menu.pack(side = "left", pady=10, padx=10)
 
         # Frame inferior para el Treeview
@@ -564,7 +564,7 @@ class AplicacionConPestanas(ctk.CTk):
         self.tarjetas_frame = ctk.CTkFrame(frame_superior)
         self.tarjetas_frame.pack(expand=True, fill="both", padx=10, pady=10)
 
-        self.boton_eliminar_menu = ctk.CTkButton(frame_intermedio, text="Eliminar Menú", command=self.eliminar_menu)
+        self.boton_eliminar_menu = ctk.CTkButton(frame_intermedio, text="Eliminar Menú", command=self.eliminar_menu, fg_color="red")
         self.boton_eliminar_menu.pack(side="right", padx=10)
 
         self.label_total = ctk.CTkLabel(frame_intermedio, text="Total: $0.00", anchor="e", font=("Helvetica", 12, "bold"))
