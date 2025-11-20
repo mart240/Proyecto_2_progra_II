@@ -77,11 +77,11 @@ class AplicacionConPestanas(ctk.CTk):
 
     def crear_pestanas(self):
         # se crean las pestañas(tabview) y se asocian las funciones que se ejecutan cuando cambie de pestaña
+        self.tab6 = self.tabview.add("Cliente")
         self.tab3 = self.tabview.add("carga de ingredientes")  
         self.tab1 = self.tabview.add("Stock")
         self.tab4 = self.tabview.add("Carta restorante")  
         self.tab2 = self.tabview.add("Pedido")
-        self.tab6 = self.tabview.add("Cliente")
         self.tab5 = self.tabview.add("Boleta")
         self.tab7 = self.tabview.add("Graficos")
         
@@ -252,24 +252,66 @@ class AplicacionConPestanas(ctk.CTk):
 
 
     def _configurar_pestana_cliente(self):
+
+        label = ctk.CTkLabel(self.tab6, text="Gestión de clientes")
+        label.pack(pady=10)
+
         contenedor = ctk.CTkFrame(self.tab6)
         contenedor.pack(expand=True, fill="both", padx=10, pady=10)
 
-        frame_treeview = ctk.CTkFrame(self.tab6)
-        frame_treeview.pack(side="left", fill="both", expand=True, padx=10, pady=10)
+        # Frame para el formulario (inputs en fila)
+        frame_formulario = ctk.CTkFrame(contenedor, fg_color="transparent")
+        frame_formulario.pack(pady=10)
 
-        label_nombre = ctk.CTkLabel(contenedor, text="Nombre:")
-        label_nombre.pack(pady=10)
-        self.entry_nombre = ctk.CTkEntry(contenedor)
-        self.entry_nombre.pack(pady=10)
+        # Frame para Nombre (vertical)
+        frame_nombre_col = ctk.CTkFrame(frame_formulario, fg_color="transparent")
+        frame_nombre_col.pack(side="left", padx=20)
 
-        lebel_email = ctk.CTkLabel(contenedor, text="Email:")
-        lebel_email.pack(pady=10)
-        self.entry_email = ctk.CTkEntry(contenedor)
-        self.entry_email.pack(pady=10)
+        ctk.CTkLabel(frame_nombre_col, text="Nombre:").pack()
+        self.entry_nombre = ctk.CTkEntry(frame_nombre_col)
+        self.entry_nombre.pack()
 
+        # Frame para Email (vertical)
+        frame_email_col = ctk.CTkFrame(frame_formulario, fg_color="transparent")
+        frame_email_col.pack(side="left", padx=20)
+
+        ctk.CTkLabel(frame_email_col, text="Email:").pack()
+        self.entry_email = ctk.CTkEntry(frame_email_col)
+        self.entry_email.pack()
+
+        # Frame para Unidad/Dominio (vertical)
+        frame_unidad_col = ctk.CTkFrame(frame_formulario, fg_color="transparent")
+        frame_unidad_col.pack(side="left", padx=20)
+
+        ctk.CTkLabel(frame_unidad_col, text="Dominio:").pack()
+        self.combo_unidad = ctk.CTkComboBox(frame_unidad_col, values=["@gmail.com", "@hotmail.com", "@yahoo.com"])
+        self.combo_unidad.pack()
+
+        # Botones
+        self.boton_crear_cliente = ctk.CTkButton(frame_nombre_col, text="Crear Cliente", command=self.Crar_cliente)
+        self.boton_crear_cliente.pack(pady=10)
+
+        self.boton_editar_cliente = ctk.CTkButton(frame_email_col, text="Editar Cliente", command=self.Editar_cliente)
+        self.boton_editar_cliente.pack(pady=10)
+
+        self.boton_eliminar_cliente = ctk.CTkButton(frame_unidad_col, text="Eliminar Cliente", command=self.Eliminar_cliente)
+        self.boton_eliminar_cliente.pack(pady=10)
+
+        # TreeView para mostrar clientes
         self.tree.heading("Nombre", text="Nombre")
         self.tree.pack(expand=True, fill="both", padx=10, pady=10)
+
+        self.frame_clientes = ctk.CTkFrame(contenedor)
+        self.frame_clientes.pack(expand=True, fill="both", padx=10, pady=10)
+        
+    def Crar_cliente(self):
+        pass
+
+    def Eliminar_cliente(self):
+        pass
+
+    def Editar_cliente(self):
+        pass
 
     def _configurar_pestana_ver_boleta(self):
         contenedor = ctk.CTkFrame(self.tab5)
