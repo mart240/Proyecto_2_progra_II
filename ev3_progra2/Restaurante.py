@@ -230,13 +230,13 @@ class AplicacionConPestanas(ctk.CTk):
         contenedor = ctk.CTkFrame(self.tab4)
         contenedor.pack(pady=10)
 
-        frame_nombre = ctk.CTkFrame(contenedor)
+        frame_nombre = ctk.CTkFrame(contenedor, fg_color="transparent")
         frame_nombre.pack(side= "left", padx=10)
 
-        frame_menu = ctk.CTkFrame(contenedor)
+        frame_menu = ctk.CTkFrame(contenedor, fg_color="transparent")
         frame_menu.pack(side= "left", padx=10)
 
-        frame_cantidad = ctk.CTkFrame(contenedor)
+        frame_cantidad = ctk.CTkFrame(contenedor, fg_color="transparent")
         frame_cantidad.pack(side= "left", padx=10)
 
         label_nombre = ctk.CTkLabel(frame_nombre, text="Cliente:")
@@ -257,8 +257,33 @@ class AplicacionConPestanas(ctk.CTk):
         self.boton_añadir = ctk.CTkButton(contenedor, text="Añadir al pedido", command=self.Añadir_pedido)
         self.boton_añadir.pack(pady=10) 
 
+        self.boton_eliminar = ctk.CTkButton(contenedor, text="Eliminar pedido", command=self.eliminar_pedido)
+        self.boton_eliminar.pack(pady=10)
+        
+        self.boton_finalizar = ctk.CTkButton(contenedor, text="Finalizar pedido", command=self.finalizar_pedido)
+        self.boton_finalizar.pack(pady=10)
+
+        # Frame inferior para el Treeview
+        frame_inferior = ctk.CTkFrame(self.tab4)
+        frame_inferior.pack(pady=10, padx=10, fill="both", expand=True)
+
+        # Treeview para mostrar los clientes
+        self.treeview_clientes = ttk.Treeview(frame_inferior, columns=("ID", "Menu", "Precio Unitario", "Cantidad", "Subtotal"), show="headings")
+        self.treeview_clientes.heading("ID", text="ID")
+        self.treeview_clientes.heading("Menu", text="Menu")
+        self.treeview_clientes.heading("Cantidad", text="Cantidad")
+        self.treeview_clientes.heading("Subtotal", text="Subtotal")
+        self.treeview_clientes.pack(pady=10, padx=10, fill="both", expand=True)
+
+        
 
     def Añadir_pedido(self):
+        pass
+
+    def eliminar_pedido(self):
+        pass
+    
+    def finalizar_pedido(self):
         pass
 
 
@@ -376,9 +401,6 @@ class AplicacionConPestanas(ctk.CTk):
         frame_formulario = ctk.CTkFrame(self.tab1)
         frame_formulario.pack(pady=10)
 
-        frame_treeview = ctk.CTkFrame(self.tab1)
-        frame_treeview.pack(fill="both", expand=True, padx=10, pady=10)
-
         self.boton_editar = ctk.CTkButton(frame_formulario, text="Editar Menu", command=self.editar_menu)
         self.boton_editar.pack(side = "left", pady=10, padx=10)
 
@@ -387,6 +409,18 @@ class AplicacionConPestanas(ctk.CTk):
 
         self.nueva_menu = ctk.CTkButton(frame_formulario, text="Nueva Menu", command=self.crear_menu)
         self.nueva_menu.pack(side = "left", pady=10, padx=10)
+
+        # Frame inferior para el Treeview
+        frame_inferior = ctk.CTkFrame(self.tab1)
+        frame_inferior.pack(pady=10, padx=10, fill="both", expand=True)
+
+        # Treeview para mostrar los clientes
+        self.treeview_clientes = ttk.Treeview(frame_inferior, columns=("ID", "Nombre", "Precio", "Descripcion"), show="headings")
+        self.treeview_clientes.heading("ID", text="ID")
+        self.treeview_clientes.heading("Nombre", text="Nombre")
+        self.treeview_clientes.heading("Precio", text="Precio")
+        self.treeview_clientes.heading("Descripcion", text="Descripcion")
+        self.treeview_clientes.pack(pady=10, padx=10, fill="both", expand=True)
 
     def editar_menu(self):
         pass
