@@ -429,7 +429,79 @@ class AplicacionConPestanas(ctk.CTk):
         pass
 
     def crear_menu(self):
-        pass
+        """Abre una ventana para crear un nuevo menú"""
+        ventana_menu = ctk.CTkToplevel(self)
+        ventana_menu.title("Crear Nuevo Menú")
+        ventana_menu.geometry("600x800")
+        ventana_menu.grab_set()
+        
+        # Frame principal
+        main_frame = ctk.CTkFrame(ventana_menu)
+        main_frame.pack(fill="both", expand=True, padx=10, pady=10)
+        
+        # Título
+        label_titulo = ctk.CTkLabel(main_frame, text="Crear Nuevo Menú", font=("Helvetica", 16, "bold"))
+        label_titulo.pack(pady=10)
+        
+        # Frame para datos básicos del menú
+        frame_datos = ctk.CTkFrame(main_frame)
+        frame_datos.pack(pady=10, padx=10, fill="x")
+        
+        # Nombre del menú
+        label_nombre = ctk.CTkLabel(frame_datos, text="Nombre del Menú:")
+        label_nombre.pack(padx=10, pady=5)
+        entry_nombre_menu = ctk.CTkEntry(frame_datos)
+        entry_nombre_menu.pack(padx=10, pady=5)
+        
+        # Precio del menú
+        label_precio=ctk.CTkLabel(frame_datos, text="Precio:")
+        label_precio.pack(padx=10, pady=5)
+        entry_precio = ctk.CTkEntry(frame_datos, placeholder_text="Ej: 5000")
+        entry_precio.pack(padx=10, pady=5)
+        
+        # Descripción del menú
+        label_descripcion=ctk.CTkLabel(frame_datos, text="Descripción:")
+        label_descripcion.pack(padx=10, pady=5)
+        entry_descripcion = ctk.CTkTextbox(frame_datos, height=80)
+        entry_descripcion.pack(padx=10, pady=5)
+        
+        # Frame para selección de ingredientes
+        frame_ingredientes = ctk.CTkFrame(main_frame)
+        frame_ingredientes.pack(pady=10, padx=10, fill="both", expand=True)
+        
+        ctk.CTkLabel(frame_ingredientes, text="Ingredientes del Menú:").pack(padx=10, pady=5)
+        
+        # Frame para agregar ingredientes
+        frame_agregar = ctk.CTkFrame(frame_ingredientes)
+        frame_agregar.pack(fill="x", padx=10, pady=5)
+        
+        ctk.CTkLabel(frame_agregar, text="Ingrediente:").pack(side="left", padx=5)
+        entry_ingrediente = ctk.CTkEntry(frame_agregar, width=150)
+        entry_ingrediente.pack(side="left", padx=5)
+        
+        ctk.CTkLabel(frame_agregar, text="Cantidad:").pack(side="left", padx=5)
+        entry_cantidad = ctk.CTkEntry(frame_agregar, width=80)
+        entry_cantidad.pack(side="left", padx=5)
+        
+        boton_agregar = ctk.CTkButton(frame_agregar, text="+", width=40)
+        boton_agregar.pack(side="left", padx=5)
+        
+        # Frame para lista de ingredientes agregados
+        frame_lista = ctk.CTkScrollableFrame(frame_ingredientes, height=100)
+        frame_lista.pack(fill="both", expand=True, padx=10, pady=10)
+        
+        ctk.CTkLabel(frame_lista, text="Lista de ingredientes agregados", text_color="gray").pack(pady=10)
+        
+        # Frame para botones de acción
+        frame_botones = ctk.CTkFrame(main_frame)
+        frame_botones.pack(side="bottom", pady=10, fill="x")  # Cambiado aquí
+        
+        btn_guardar = ctk.CTkButton(frame_botones, text="Guardar Menú", fg_color="green", width=150)
+        btn_guardar.pack(side="left", padx=10, expand=True)  # Cambiado aquí
+        
+        btn_cancelar = ctk.CTkButton(frame_botones, text="Cancelar", command=ventana_menu.destroy, fg_color="red", width=150)
+        btn_cancelar.pack(side="left", padx=10, expand=True)  # Cambiado aquí
+
 
     def tarjeta_click(self, event, menu):
         suficiente_stock = True
