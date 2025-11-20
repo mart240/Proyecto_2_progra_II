@@ -95,14 +95,12 @@ class AplicacionConPestanas(ctk.CTk):
         self._configurar_pestana_ver_graficos()
 
     def configurar_pestana3(self):
-        
         # titulo de arriba
         label = ctk.CTkLabel(self.tab3, text="Carga de archivo CSV")
         label.pack(pady=20)
 
         # boton para seleccionar y cargar archivo CSV
         boton_cargar_csv = ctk.CTkButton(self.tab3, text="Cargar CSV", fg_color="#1976D2", text_color="white",command=self.cargar_csv)
-
         boton_cargar_csv.pack(pady=10)
 
         frame_superior = ctk.CTkFrame(self.tab3)
@@ -130,17 +128,16 @@ class AplicacionConPestanas(ctk.CTk):
         self.boton_eliminar = ctk.CTkButton(frame_superior, text="Eliminar Ingrediente", command=self.eliminar_ingrediente)
         self.boton_eliminar.pack(pady=10)
 
-        # contenedor para mostrar la tabla de los datos del CSV
-        self.frame_tabla_csv = ctk.CTkFrame(self.tab3)
-        self.frame_tabla_csv.pack(fill="both", expand=True, padx=10, pady=10)
+        # Frame inferior para el Treeview
+        frame_inferior = ctk.CTkFrame(self.tab3)
+        frame_inferior.pack(pady=10, padx=10, fill="both", expand=True)
 
-        # Variables para manejar contenido CSV
-        self.df_csv = None                  # DataFrame con los datos del CSV
-        self.tabla_csv = None               # Widget para mostrar la tabla de los datos del CSV
-
-        # boton para agregar los datos al stock
-        self.boton_agregar_stock = ctk.CTkButton(self.frame_tabla_csv, text="Agregar al Stock")
-        self.boton_agregar_stock.pack(side="bottom", pady=10)
+        # Treeview para mostrar los clientes
+        self.treeview_clientes = ttk.Treeview(frame_inferior, columns=("ID", "Nombre", "Stock"), show="headings")
+        self.treeview_clientes.heading("ID", text="ID")
+        self.treeview_clientes.heading("Nombre", text="Nombre")
+        self.treeview_clientes.heading("Stock", text="Stock")
+        self.treeview_clientes.pack(pady=10, padx=10, fill="both", expand=True)
 
     def agregar_ingrediente(self):
         pass
@@ -311,12 +308,16 @@ class AplicacionConPestanas(ctk.CTk):
         self.boton_eliminar_cliente = ctk.CTkButton(frame_unidad_col, text="Eliminar Cliente", command=self.Eliminar_cliente)
         self.boton_eliminar_cliente.pack(pady=10)
 
-        # TreeView para mostrar clientes
-        #self.tree.heading("Nombre", text="Nombre")
-        #self.tree.pack(expand=True, fill="both", padx=10, pady=10)
+        # Frame inferior para el Treeview
+        frame_inferior = ctk.CTkFrame(contenedor)
+        frame_inferior.pack(pady=10, padx=10, fill="both", expand=True)
 
-        self.frame_clientes = ctk.CTkFrame(contenedor)
-        self.frame_clientes.pack(expand=True, fill="both", padx=10, pady=10)
+        # Treeview para mostrar los clientes
+        self.treeview_clientes = ttk.Treeview(frame_inferior, columns=("Email", "Nombre", "Edad"), show="headings")
+        self.treeview_clientes.heading("Email", text="Email")
+        self.treeview_clientes.heading("Nombre", text="Nombre")
+        self.treeview_clientes.heading("Edad", text="Edad")
+        self.treeview_clientes.pack(pady=10, padx=10, fill="both", expand=True)
         
     def Crar_cliente(self):
         pass
@@ -548,8 +549,25 @@ class AplicacionConPestanas(ctk.CTk):
         self.boton_generar_boleta.pack(side="bottom",pady=10)
 
     def _configurar_pestana_ver_graficos(self):
+        label = ctk.CTkLabel(self.tab7, text="Graficos")
+        label.pack(pady=10)
+        
         contenedor = ctk.CTkFrame(self.tab7)
         contenedor.pack(expand=True, fill="both", padx=10, pady=10)
+
+        frame_superior = ctk.CTkFrame(contenedor, fg_color="transparent")
+        frame_superior.pack(pady=10, padx=30)
+
+        label_grafico = ctk.CTkLabel(frame_superior, text="Grafico:")
+        label_grafico.pack(pady=5)
+        self.combo_unidad = ctk.CTkComboBox(frame_superior, values=["Ventas diarias", "Menu más comprado"])
+        self.combo_unidad.pack(pady=10)
+
+        self.boton_cargar_grafico = ctk.CTkButton(frame_superior, text="Cargar Grafico", command=self.cargar_grafico)
+        self.boton_cargar_grafico.pack(pady=10)
+
+    def cargar_grafico(self):
+        pass
 
     def crear_tarjeta(self, menu):
         cols = 6
