@@ -55,27 +55,35 @@ class AplicacionConPestanas(ctk.CTk):
 
     def on_tab_change(self):
         selected_tab = self.tabview.get()   # obtiene el nombre de la pestaña seleccionada
-        if selected_tab == "carga de ingredientes":
+        if selected_tab == "Ingredientes":
             print('carga de ingredientes')
-        if selected_tab == "Stock":
+        if selected_tab == "Menu":
             self.actualizar_treeview()  # actualiza el treeview con los ingredientes del stock
         if selected_tab == "Pedido":
             self.actualizar_treeview()  # actualiza el treeview ver los pedidos
             print('pedido')
-        if selected_tab == "Carta restorante":
+        if selected_tab == "Panel de compra":
             self.actualizar_treeview()  # actualiza el treeview para ver la carta
-            print('Carta restorante')
+            print('Panel de compra')
+        if selected_tab == "Cliente":
+            self.actualizar_treeview()  # actualiza el treeview para ver el registro
+            print('Cliente')
         if selected_tab == "Boleta":
             self.actualizar_treeview()  # actualiza el treeview para ver la boleta
             print('Boleta')       
+        if selected_tab == "Graficos":
+            self.actualizar_treeview()  # actualiza el treeview para ver los graficos   
+            print('Graficos')
 
     def crear_pestanas(self):
         # se crean las pestañas(tabview) y se asocian las funciones que se ejecutan cuando cambie de pestaña
-        self.tab3 = self.tabview.add("carga de ingredientes")  
-        self.tab1 = self.tabview.add("Stock")
-        self.tab4 = self.tabview.add("Carta restorante")  
+        self.tab6 = self.tabview.add("Cliente")
+        self.tab3 = self.tabview.add("Ingredientes")  
+        self.tab1 = self.tabview.add("Menu")
+        self.tab4 = self.tabview.add("Panel de compra")  
         self.tab2 = self.tabview.add("Pedido")
         self.tab5 = self.tabview.add("Boleta")
+        self.tab7 = self.tabview.add("Graficos")
         
         # se llama a las funciones que se ejecutan cuando cambie de pestaña
         self.configurar_pestana1()
@@ -83,6 +91,8 @@ class AplicacionConPestanas(ctk.CTk):
         self.configurar_pestana3()
         self._configurar_pestana_crear_menu()
         self._configurar_pestana_ver_boleta()
+        self._configurar_pestana_cliente()
+        self._configurar_pestana_ver_graficos()
 
     def configurar_pestana3(self):
         
@@ -95,6 +105,31 @@ class AplicacionConPestanas(ctk.CTk):
 
         boton_cargar_csv.pack(pady=10)
 
+        frame_superior = ctk.CTkFrame(self.tab3)
+        frame_superior.pack(pady=10)
+
+        frame_nombre = ctk.CTkFrame(frame_superior)
+        frame_nombre.pack(side= "left", padx=10)
+
+        frame_cantidad = ctk.CTkFrame(frame_superior)
+        frame_cantidad.pack(side= "left", padx=10)
+
+        label_nombre = ctk.CTkLabel(frame_nombre, text="Nombre:")
+        label_nombre.pack(pady=5)
+        self.entry_nombre = ctk.CTkEntry(frame_nombre)
+        self.entry_nombre.pack(pady=5)
+
+        label_cantidad = ctk.CTkLabel(frame_cantidad, text="Cantidad:")
+        label_cantidad.pack(pady=5)
+        self.entry_cantidad = ctk.CTkEntry(frame_cantidad)
+        self.entry_cantidad.pack(pady=5)
+
+        self.boton_agregar = ctk.CTkButton(frame_superior, text="Agregar Ingrediente", command=self.agregar_ingrediente)
+        self.boton_agregar.pack(pady=10)    
+
+        self.boton_eliminar = ctk.CTkButton(frame_superior, text="Eliminar Ingrediente", command=self.eliminar_ingrediente)
+        self.boton_eliminar.pack(pady=10)
+
         # contenedor para mostrar la tabla de los datos del CSV
         self.frame_tabla_csv = ctk.CTkFrame(self.tab3)
         self.frame_tabla_csv.pack(fill="both", expand=True, padx=10, pady=10)
@@ -106,6 +141,12 @@ class AplicacionConPestanas(ctk.CTk):
         # boton para agregar los datos al stock
         self.boton_agregar_stock = ctk.CTkButton(self.frame_tabla_csv, text="Agregar al Stock")
         self.boton_agregar_stock.pack(side="bottom", pady=10)
+
+    def agregar_ingrediente(self):
+        pass
+
+    def eliminar_ingrediente(self): 
+        pass
 
     def agregar_csv_al_stock(self):
 
@@ -186,59 +227,105 @@ class AplicacionConPestanas(ctk.CTk):
             self.treeview_menu.insert("", "end", values=(menu.nombre, menu.cantidad, f"${menu.precio:.2f}"))
 
     def _configurar_pestana_crear_menu(self):
+        label = ctk.CTkLabel(self.tab4, text="Panel de compra")
+        label.pack(pady=20)
+
         contenedor = ctk.CTkFrame(self.tab4)
+        contenedor.pack(pady=10)
+
+        frame_nombre = ctk.CTkFrame(contenedor)
+        frame_nombre.pack(side= "left", padx=10)
+
+        frame_menu = ctk.CTkFrame(contenedor)
+        frame_menu.pack(side= "left", padx=10)
+
+        frame_cantidad = ctk.CTkFrame(contenedor)
+        frame_cantidad.pack(side= "left", padx=10)
+
+        label_nombre = ctk.CTkLabel(frame_nombre, text="Cliente:")
+        label_nombre.pack(pady=5)
+        self.entry_nombre = ctk.CTkEntry(frame_nombre)
+        self.entry_nombre.pack(pady=5)
+
+        label_menu = ctk.CTkLabel(frame_menu, text="Menu:")
+        label_menu.pack(pady=5)
+        self.entry_menu = ctk.CTkEntry(frame_menu)
+        self.entry_menu.pack(pady=5)
+
+        label_cantidad = ctk.CTkLabel(frame_cantidad, text="Cantidad:")
+        label_cantidad.pack(pady=5)
+        self.entry_cantidad = ctk.CTkEntry(frame_cantidad)
+        self.entry_cantidad.pack(pady=5)
+
+        self.boton_añadir = ctk.CTkButton(contenedor, text="Añadir al pedido", command=self.Añadir_pedido)
+        self.boton_añadir.pack(pady=10) 
+
+
+    def Añadir_pedido(self):
+        pass
+
+
+    def _configurar_pestana_cliente(self):
+
+        label = ctk.CTkLabel(self.tab6, text="Gestión de clientes")
+        label.pack(pady=10)
+
+        contenedor = ctk.CTkFrame(self.tab6)
         contenedor.pack(expand=True, fill="both", padx=10, pady=10)
+
+        # Frame para el formulario (inputs en fila)
+        frame_formulario = ctk.CTkFrame(contenedor, fg_color="transparent")
+        frame_formulario.pack(pady=10)
+
+        # Frame para Nombre (vertical)
+        frame_nombre_col = ctk.CTkFrame(frame_formulario, fg_color="transparent")
+        frame_nombre_col.pack(side="left", padx=20)
+
+        ctk.CTkLabel(frame_nombre_col, text="Nombre:").pack()
+        self.entry_nombre = ctk.CTkEntry(frame_nombre_col)
+        self.entry_nombre.pack()
+
+        # Frame para Email (vertical)
+        frame_email_col = ctk.CTkFrame(frame_formulario, fg_color="transparent")
+        frame_email_col.pack(side="left", padx=20)
+
+        ctk.CTkLabel(frame_email_col, text="Email:").pack()
+        self.entry_email = ctk.CTkEntry(frame_email_col)
+        self.entry_email.pack()
+
+        # Frame para Unidad/Dominio (vertical)
+        frame_unidad_col = ctk.CTkFrame(frame_formulario, fg_color="transparent")
+        frame_unidad_col.pack(side="left", padx=20)
+
+        ctk.CTkLabel(frame_unidad_col, text="Dominio:").pack()
+        self.combo_unidad = ctk.CTkComboBox(frame_unidad_col, values=["@gmail.com", "@hotmail.com", "@yahoo.com"])
+        self.combo_unidad.pack()
+
+        # Botones
+        self.boton_crear_cliente = ctk.CTkButton(frame_nombre_col, text="Crear Cliente", command=self.Crar_cliente)
+        self.boton_crear_cliente.pack(pady=10)
+
+        self.boton_editar_cliente = ctk.CTkButton(frame_email_col, text="Editar Cliente", command=self.Editar_cliente)
+        self.boton_editar_cliente.pack(pady=10)
+
+        self.boton_eliminar_cliente = ctk.CTkButton(frame_unidad_col, text="Eliminar Cliente", command=self.Eliminar_cliente)
+        self.boton_eliminar_cliente.pack(pady=10)
+
+        # TreeView para mostrar clientes
+        #self.tree.heading("Nombre", text="Nombre")
+        #self.tree.pack(expand=True, fill="both", padx=10, pady=10)
+
+        self.frame_clientes = ctk.CTkFrame(contenedor)
+        self.frame_clientes.pack(expand=True, fill="both", padx=10, pady=10)
         
-        # boton para generar la carta PDF
-        boton_menu = ctk.CTkButton(contenedor,text="Generar Carta (PDF)",command=self.generar_y_mostrar_carta_pdf)
-        boton_menu.pack(pady=10)
+    def Crar_cliente(self):
+        pass
 
-        # marco para mostrar la carta PDF
-        self.pdf_frame_carta = ctk.CTkFrame(contenedor)
-        self.pdf_frame_carta.pack(expand=True, fill="both", padx=10, pady=10)
+    def Eliminar_cliente(self):
+        pass
 
-        self.pdf_viewer_carta = None # se inicializa vacio hasta que se genere el PDF
-
-    def generar_y_mostrar_carta_pdf(self):
-        try:
-            # Filtrar los menús disponibles antes de crear el PDF
-            menus_disponibles = [m for m in self.menus if self.menu_disponible(m)]
-
-            # si no hay menús disponibles, muestra un mensaje de error
-            if not menus_disponibles:
-                CTkMessagebox(title="Carta vacía", message="No hay menús con ingredientes suficientes en stock.", icon="warning")
-                return
-            
-
-            # nombre del archivo PDF
-            pdf_path = "carta.pdf"
-
-            # crea el PDF con los menús disponibles
-            create_menu_pdf(
-                menus_disponibles, 
-                pdf_path,
-                titulo_negocio="Restaurante",
-                subtitulo="Carta Primavera 2025",
-                moneda="$"
-            )
-
-            # si ya hay un PDF abieto, se destruye para mostrar el nuevo
-            if self.pdf_viewer_carta is not None:
-                try:
-                    self.pdf_viewer_carta.pack_forget()
-                    self.pdf_viewer_carta.destroy()
-                except Exception:
-                    pass
-                self.pdf_viewer_carta = None
-
-            # Muestra el PDF dentro del marco creado anteriormente
-            abs_pdf = os.path.abspath(pdf_path) # se convierte la ruta relativa a absoluta
-            self.pdf_viewer_carta = CTkPDFViewer(self.pdf_frame_carta, file=abs_pdf)
-            self.pdf_viewer_carta.pack(expand=True, fill="both")
-
-        except Exception as e:
-            # Muestra un mensaje de error si hay algún error
-            CTkMessagebox(title="Error", message=f"No se pudo generar/mostrar la carta.\n{e}", icon="warning")
+    def Editar_cliente(self):
+        pass
 
     def _configurar_pestana_ver_boleta(self):
         contenedor = ctk.CTkFrame(self.tab5)
@@ -281,46 +368,33 @@ class AplicacionConPestanas(ctk.CTk):
 
 
     def configurar_pestana1(self):
+
+        label = ctk.CTkLabel(self.tab1, text="Menu")
+        label.pack(pady=20)
         # Dividir la Pestaña 1 en dos frames
         frame_formulario = ctk.CTkFrame(self.tab1)
-        frame_formulario.pack(side="left", fill="both", expand=True, padx=10, pady=10)
+        frame_formulario.pack(pady=10)
 
         frame_treeview = ctk.CTkFrame(self.tab1)
-        frame_treeview.pack(side="right", fill="both", expand=True, padx=10, pady=10)
+        frame_treeview.pack(fill="both", expand=True, padx=10, pady=10)
 
-        # Formulario en el primer frame
-        label_nombre = ctk.CTkLabel(frame_formulario, text="Nombre del Ingrediente:")
-        label_nombre.pack(pady=5)
-        self.entry_nombre = ctk.CTkEntry(frame_formulario)
-        self.entry_nombre.pack(pady=5)
+        self.boton_editar = ctk.CTkButton(frame_formulario, text="Editar Menu", command=self.editar_menu)
+        self.boton_editar.pack(side = "left", pady=10, padx=10)
 
-        label_cantidad = ctk.CTkLabel(frame_formulario, text="Unidad:")
-        label_cantidad.pack(pady=5)
-        self.combo_unidad = ctk.CTkComboBox(frame_formulario, values=["unidad"])
-        self.combo_unidad.pack(pady=5)
+        self.boton_eliminar = ctk.CTkButton(frame_formulario, text="Eliminar Menu", command=self.eliminar_menu)
+        self.boton_eliminar.pack(side = "left", pady=10, padx=10)
 
-        label_cantidad = ctk.CTkLabel(frame_formulario, text="Cantidad:")
-        label_cantidad.pack(pady=5)
-        self.entry_cantidad = ctk.CTkEntry(frame_formulario)
-        self.entry_cantidad.pack(pady=5)
+        self.nueva_menu = ctk.CTkButton(frame_formulario, text="Nueva Menu", command=self.crear_menu)
+        self.nueva_menu.pack(side = "left", pady=10, padx=10)
 
-        self.boton_ingresar = ctk.CTkButton(frame_formulario, text="Ingresar Ingrediente")
-        self.boton_ingresar.configure(command=self.ingresar_ingrediente)
-        self.boton_ingresar.pack(pady=10)
+    def editar_menu(self):
+        pass
 
-        self.boton_eliminar = ctk.CTkButton(frame_treeview, text="Eliminar Ingrediente", fg_color="black", text_color="white")
-        self.boton_eliminar.configure(command=self.eliminar_ingrediente)
-        self.boton_eliminar.pack(pady=10)
+    def eliminar_menu(self):
+        pass
 
-        self.tree = ttk.Treeview(self.tab1, columns=("Nombre", "Unidad", "Cantidad"), show="headings",height=25)
-        
-        self.tree.heading("Nombre", text="Nombre")
-        self.tree.heading("Unidad", text="Unidad")
-        self.tree.heading("Cantidad", text="Cantidad")
-        self.tree.pack(expand=True, fill="both", padx=10, pady=10)
-
-        self.boton_generar_menu = ctk.CTkButton(frame_treeview, text="Generar Menú", command=self.generar_menus)
-        self.boton_generar_menu.pack(pady=10)
+    def crear_menu(self):
+        pass
 
     def tarjeta_click(self, event, menu):
         suficiente_stock = True
@@ -472,6 +546,10 @@ class AplicacionConPestanas(ctk.CTk):
 
         self.boton_generar_boleta=ctk.CTkButton(frame_inferior,text="Generar Boleta",command=self.generar_boleta)
         self.boton_generar_boleta.pack(side="bottom",pady=10)
+
+    def _configurar_pestana_ver_graficos(self):
+        contenedor = ctk.CTkFrame(self.tab7)
+        contenedor.pack(expand=True, fill="both", padx=10, pady=10)
 
     def crear_tarjeta(self, menu):
         cols = 6
