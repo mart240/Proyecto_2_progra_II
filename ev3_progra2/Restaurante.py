@@ -1,3 +1,7 @@
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from datetime import datetime
+from models import Ingrediente, Pedido, DetallePedido, Cliente
 import os
 from ElementoMenu import CrearMenu
 import customtkinter as ctk
@@ -18,7 +22,6 @@ import os
 from tkinter.font import nametofont
 
 class AplicacionConPestanas(ctk.CTk):
-
     def __init__(self):
         super().__init__()
         
@@ -43,7 +46,6 @@ class AplicacionConPestanas(ctk.CTk):
         self.crear_pestanas()
 
     def actualizar_treeview(self):
-
         # borra los elementos existentes en el treeview
         for item in self.tree.get_children():
             self.tree.delete(item)
@@ -85,30 +87,48 @@ class AplicacionConPestanas(ctk.CTk):
         self._configurar_pestana_ver_boleta()
 
     def configurar_pestana3(self):
+        # --- Interfaz de Ingredientes ---
+        label = ctk.CTkLabel(self.tab3, text="Gestión de Stock e Ingredientes", font=("Arial", 16, "bold"))
+        label.pack(pady=10)
+
+        # Frame para formulario
+        frame_input = ctk.CTkFrame(self.tab3)
+        frame_input.pack(pady=10)
+
+        # Nombre
+        ctk.CTkLabel(frame_input, text="Nombre:").grid(row=0, column=0, padx=5, pady=5)
+        self.entry_ingrediente_nombre = ctk.CTkEntry(frame_input, width=150)
+        self.entry_ingrediente_nombre.grid(row=0, column=1, padx=5, pady=5)
+
+        # Cantidad
+        ctk.CTkLabel(frame_input, text="Cantidad:").grid(row=0, column=2, padx=5, pady=5)
+        self.entry_ingrediente_cantidad = ctk.CTkEntry(frame_input, width=80)
+        self.entry_ingrediente_cantidad.grid(row=0, column=3, padx=5, pady=5)
+
+        # Unidad
+        ctk.CTkLabel(frame_input, text="Unidad:").grid(row=0, column=4, padx=5, pady=5)
+        self.combo_ingrediente_unidad = ctk.CTkComboBox(frame_input, values=["kg", "g", "l", "ml", "unidades"], width=100)
+        self.combo_ingrediente_unidad.grid(row=0, column=5, padx=5, pady=5)
+
+        # Botones
+        self.boton_agregar_ing = ctk.CTkButton(self.tab3, text="Guardar en Base de Datos", command=self.agregar_ingrediente, fg_color="green")
+        self.boton_agregar_ing.pack(pady=10)
+
+        # Treeview
+        frame_tabla = ctk.CTkFrame(self.tab3)
+        frame_tabla.pack(pady=10, padx=10, fill="both", expand=True)
+
+        self.tree_ingredientes = ttk.Treeview(frame_tabla, columns=("ID", "Nombre", "Cantidad", "Unidad"), show="headings")
+        self.tree_ingredientes.heading("ID", text="ID")
+        self.tree_ingredientes.heading("Nombre", text="Nombre")
+        self.tree_ingredientes.heading("Cantidad", text="Cantidad")
+        self.tree_ingredientes.heading("Unidad", text="Unidad")
+        self.tree_ingredientes.pack(fill="both", expand=True)
         
-        # titulo de arriba
-        label = ctk.CTkLabel(self.tab3, text="Carga de archivo CSV")
-        label.pack(pady=20)
-
-        # boton para seleccionar y cargar archivo CSV
-        boton_cargar_csv = ctk.CTkButton(self.tab3, text="Cargar CSV", fg_color="#1976D2", text_color="white",command=self.cargar_csv)
-
-        boton_cargar_csv.pack(pady=10)
-
-        # contenedor para mostrar la tabla de los datos del CSV
-        self.frame_tabla_csv = ctk.CTkFrame(self.tab3)
-        self.frame_tabla_csv.pack(fill="both", expand=True, padx=10, pady=10)
-
-        # Variables para manejar contenido CSV
-        self.df_csv = None                  # DataFrame con los datos del CSV
-        self.tabla_csv = None               # Widget para mostrar la tabla de los datos del CSV
-
-        # boton para agregar los datos al stock
-        self.boton_agregar_stock = ctk.CTkButton(self.frame_tabla_csv, text="Agregar al Stock")
-        self.boton_agregar_stock.pack(side="bottom", pady=10)
+        # Cargar datos iniciales
+        self.actualizar_treeview_ingredientes_bd()
 
     def agregar_csv_al_stock(self):
-
         # verifica si hay un DataFrame cargado
         if self.df_csv is None:
             CTkMessagebox(title="Error", message="Primero debes cargar un archivo CSV.", icon="warning")
@@ -155,7 +175,6 @@ class AplicacionConPestanas(ctk.CTk):
                 CTkMessagebox(title="Error", message=f"No se pudo cargar el archivo CSV.\n{e}", icon="warning")
 
     def mostrar_dataframe_en_tabla(self, df):
-
         # si ya existe una tabla, se destruye
         if self.tabla_csv:
             self.tabla_csv.destroy()
@@ -176,7 +195,6 @@ class AplicacionConPestanas(ctk.CTk):
         self.tabla_csv.pack(expand=True, fill="both", padx=10, pady=10)
 
     def actualizar_treeview_pedido(self):
-
         # limpia la tabla pedidos
         for item in self.treeview_menu.get_children():
             self.treeview_menu.delete(item)
@@ -530,18 +548,59 @@ class AplicacionConPestanas(ctk.CTk):
             CTkMessagebox(title="Error de Validación", message="La cantidad debe ser un número entero positivo.", icon="warning")
             return False
 
-    def ingresar_ingrediente(self):
-        nombre = self.entry_nombre.get()
-        nombre = nombre.title()
-        unidad = self.combo_unidad.get()
-        cantidad = self.entry_cantidad.get()
-        
-        if not self.validar_nombre(nombre) or not self.validar_cantidad(cantidad):
+    def agregar_ingrediente(self):
+        nombre = self.entry_ingrediente_nombre.get().strip().title()
+        cantidad = self.entry_ingrediente_cantidad.get().strip()
+        unidad = self.combo_ingrediente_unidad.get()
+
+        if not nombre or not cantidad:
+            messagebox.showwarning("Datos incompletos", "Por favor llena nombre y cantidad.")
             return
-        
-        ingrediente = Ingrediente(nombre=nombre, unidad=unidad, cantidad=cantidad)
-        self.stock.agregar_ingrediente(ingrediente)
-        self.actualizar_treeview()
+
+        try:
+            cant_float = float(cantidad)
+        except ValueError:
+            messagebox.showerror("Error", "La cantidad debe ser un número.")
+            return
+
+        # Conexión a BD
+        session = next(get_session())
+        try:
+            # Verificar si existe para sumar stock o crear nuevo
+            ingrediente_existente = session.query(Ingrediente).filter_by(nombre=nombre).first()
+            
+            if ingrediente_existente:
+                ingrediente_existente.cantidad += cant_float
+                mensaje = f"Stock actualizado: {nombre} ahora tiene {ingrediente_existente.cantidad}"
+            else:
+                nuevo_ing = Ingrediente(nombre=nombre, cantidad=cant_float, unidad=unidad)
+                session.add(nuevo_ing)
+                mensaje = f"Ingrediente nuevo creado: {nombre}"
+            
+            session.commit()
+            messagebox.showinfo("Éxito", mensaje)
+            
+            # Limpiar campos y actualizar tabla
+            self.entry_ingrediente_nombre.delete(0, 'end')
+            self.entry_ingrediente_cantidad.delete(0, 'end')
+            self.actualizar_treeview_ingredientes_bd()
+
+        except Exception as e:
+            session.rollback()
+            messagebox.showerror("Error BD", str(e))
+        finally:
+            session.close()
+
+    def actualizar_treeview_ingredientes_bd(self):
+        # Limpiar tabla
+        for item in self.tree_ingredientes.get_children():
+            self.tree_ingredientes.delete(item)
+            
+        session = next(get_session())
+        ingredientes = session.query(Ingrediente).all()
+        for ing in ingredientes:
+            self.tree_ingredientes.insert("", "end", values=(ing.id, ing.nombre, ing.cantidad, ing.unidad))
+        session.close()
 
     def eliminar_ingrediente(self):
         seleccionado = self.tree.selection()
