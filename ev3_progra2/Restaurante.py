@@ -20,6 +20,7 @@ from database import get_session
 from crud.cliente_crud import ClienteCRUD
 from crud.pedido_crud import PedidoCRUD
 from database import get_session, engine, Base
+from models import Cliente
 
 # Crear tablas si no existen 
 Base.metadata.create_all(bind=engine)
@@ -284,62 +285,61 @@ class AplicacionConPestanas(ctk.CTk):
 
 
     def _configurar_pestana_cliente(self):
-
         label = ctk.CTkLabel(self.tab6, text="Gestión de clientes")
         label.pack(pady=10)
 
         contenedor = ctk.CTkFrame(self.tab6)
         contenedor.pack(expand=True, fill="both", padx=10, pady=10)
 
-        # Frame para el formulario (inputs en fila)
         frame_formulario = ctk.CTkFrame(contenedor, fg_color="transparent")
         frame_formulario.pack(pady=10)
 
-        # Frame para Nombre (vertical)
-        frame_nombre_col = ctk.CTkFrame(frame_formulario, fg_color="transparent")
-        frame_nombre_col.pack(side="left", padx=20)
+        frame_nombre = ctk.CTkFrame(frame_formulario, fg_color="transparent")
+        frame_nombre.pack(side="left", padx=20)
 
-        ctk.CTkLabel(frame_nombre_col, text="Nombre:").pack()
-        self.entry_nombre = ctk.CTkEntry(frame_nombre_col)
+        ctk.CTkLabel(frame_nombre, text="Nombre:").pack()
+        self.entry_nombre = ctk.CTkEntry(frame_nombre)
         self.entry_nombre.pack()
 
-        # Frame para Email (vertical)
-        frame_email_col = ctk.CTkFrame(frame_formulario, fg_color="transparent")
-        frame_email_col.pack(side="left", padx=20)
+        frame_email = ctk.CTkFrame(frame_formulario, fg_color="transparent")
+        frame_email.pack(side="left", padx=20)
 
-        ctk.CTkLabel(frame_email_col, text="Email:").pack()
-        self.entry_email = ctk.CTkEntry(frame_email_col)
+        ctk.CTkLabel(frame_email, text="Correo:").pack()
+        self.entry_email = ctk.CTkEntry(frame_email, placeholder_text="usuario123")
         self.entry_email.pack()
 
-        # Frame para Unidad/Dominio (vertical)
-        frame_unidad_col = ctk.CTkFrame(frame_formulario, fg_color="transparent")
-        frame_unidad_col.pack(side="left", padx=20)
+        frame_dominio = ctk.CTkFrame(frame_formulario, fg_color="transparent")
+        frame_dominio.pack(side="left", padx=20)
 
-        ctk.CTkLabel(frame_unidad_col, text="Dominio:").pack()
-        self.combo_unidad = ctk.CTkComboBox(frame_unidad_col, values=["@gmail.com", "@hotmail.com", "@yahoo.com"])
-        self.combo_unidad.pack()
+        ctk.CTkLabel(frame_dominio, text="Dominio:").pack()
 
-        # Botones
-        self.boton_crear_cliente = ctk.CTkButton(frame_nombre_col, text="Crear Cliente", command=self.Crear_cliente, fg_color="green")
+        self.combo_dominio = ctk.CTkComboBox(
+            frame_dominio,
+            values=["@gmail.com", "@hotmail.com", "@yahoo.com"]
+        )
+        self.combo_dominio.set("@gmail.com")   # Valor inicial correcto
+        self.combo_dominio.pack()
+
+        self.boton_crear_cliente = ctk.CTkButton(frame_nombre, text="Crear Cliente",fg_color="green", command=self.Crear_cliente)
         self.boton_crear_cliente.pack(pady=10)
 
-        self.boton_editar_cliente = ctk.CTkButton(frame_email_col, text="Editar Cliente", command=self.Editar_cliente)
+        self.boton_editar_cliente = ctk.CTkButton(frame_email, text="Editar Cliente",command=self.Editar_cliente)
         self.boton_editar_cliente.pack(pady=10)
 
-        self.boton_eliminar_cliente = ctk.CTkButton(frame_unidad_col, text="Eliminar Cliente", command=self.Eliminar_cliente, fg_color="red")
+        self.boton_eliminar_cliente = ctk.CTkButton(frame_dominio, text="Eliminar Cliente",fg_color="red", command=self.Eliminar_cliente)
         self.boton_eliminar_cliente.pack(pady=10)
 
-        # Frame inferior para el Treeview
+    
         frame_inferior = ctk.CTkFrame(contenedor)
         frame_inferior.pack(pady=10, padx=10, fill="both", expand=True)
 
-        # Treeview para mostrar los clientes
-        self.treeview_clientes = ttk.Treeview(frame_inferior, columns=("Email", "Nombre"), show="headings")
+        self.treeview_clientes = ttk.Treeview(frame_inferior,columns=("Email", "Nombre"),show="headings")
         self.treeview_clientes.heading("Email", text="Email")
         self.treeview_clientes.heading("Nombre", text="Nombre")
-        self.treeview_clientes.pack(pady=10, padx=10, fill="both", expand=True)
+        self.treeview_clientes.pack(fill="both", expand=True)
 
         self.cargar_clientes()
+
 
     def cargar_clientes(self):
         db = next(get_session())
@@ -357,62 +357,65 @@ class AplicacionConPestanas(ctk.CTk):
     def Crear_cliente(self):
         nombre = self.entry_nombre.get().strip()
         parte_email = self.entry_email.get().strip()
-        dominio = self.combo_unidad.get()
+        dominio = self.combo_dominio.get().strip()
 
-        # Validar campos vacíos
-        if not nombre or not parte_email:
-            messagebox.showwarning("Error", "Debe ingresar nombre y correo.")
+        # Validaciones
+        if not nombre:
+            messagebox.showwarning("Error", "Debe ingresar el nombre.")
             return
 
-        # Unir email
-        email = parte_email + dominio
+        if not parte_email:
+            messagebox.showwarning("Error", "Debe escribir la parte antes del @ del correo.")
+            return
 
-        # Validar formato email
+        if not dominio:
+            messagebox.showwarning("Error", "Debe seleccionar un dominio.")
+            return
+
+        # Armar correo final
+        email = f"{parte_email}{dominio}".lower()
+
+        # Validación regex
         if not re.match(r"^[\w\.-]+@[\w\.-]+\.\w+$", email):
             messagebox.showwarning("Error", "El correo no tiene un formato válido.")
             return
 
         db = next(get_session())
 
-        # Validar unicidad con filter + lambda
+        # Pauta: usar filter + lambda para validar unicidad
         existe = list(filter(lambda c: c.email == email, ClienteCRUD.leer_clientes(db)))
         if existe:
             messagebox.showwarning("Error", "El correo ya está registrado.")
             db.close()
             return
 
-        # Crear
         ClienteCRUD.crear_cliente(db, nombre, email)
         db.close()
 
         self.cargar_clientes()
 
-        # limpiar
         self.entry_nombre.delete(0, 'end')
         self.entry_email.delete(0, 'end')
-        self.combo_unidad.set("@gmail.com")
+        self.combo_dominio.set("@gmail.com")
 
         messagebox.showinfo("Éxito", "Cliente creado correctamente.")
-
-
 
     
     def Eliminar_cliente(self):
         seleccion = self.treeview_clientes.selection()
 
         if not seleccion:
-            messagebox.showwarning("Error", "Seleccione un cliente.")
+            messagebox.showwarning("Error", "Seleccione un cliente para eliminar.")
             return
 
         email = self.treeview_clientes.item(seleccion[0], "values")[0]
 
         db = next(get_session())
 
-        # Validación de pauta: NO eliminar si tiene pedidos
-        cliente = db.query(cliente).filter_by(email=email).first()
+        cliente = db.query(Cliente).filter_by(email=email).first()
 
         if cliente and cliente.pedidos:
-            messagebox.showwarning("Error", "No se puede eliminar: el cliente tiene pedidos asociados.")
+            messagebox.showwarning("Error", "No se puede eliminar: tiene pedidos asociados.")
             db.close()
             return
 
@@ -423,36 +426,36 @@ class AplicacionConPestanas(ctk.CTk):
         messagebox.showinfo("Éxito", "Cliente eliminado.")
 
 
+
     def Editar_cliente(self):
         seleccion = self.treeview_clientes.selection()
 
         if not seleccion:
-            messagebox.showwarning("Error", "Seleccione un cliente primero.")
+            messagebox.showwarning("Error", "Seleccione un cliente para editar.")
             return
 
         old_email = self.treeview_clientes.item(seleccion[0], "values")[0]
 
-        nuevo_nombre = self.cli_nombre.get().strip()
-        nuevo_email = self.cli_email.get().strip()
+        nombre = self.entry_nombre.get().strip()
+        parte_email = self.entry_email.get().strip()
+        dominio = self.combo_dominio.get().strip()
 
-        if not nuevo_nombre or not nuevo_email:
+        if not nombre or not parte_email:
             messagebox.showwarning("Error", "Debe ingresar nombre y correo.")
             return
 
-        # Validar formato del nuevo email
-        if not re.match(r"^[\w\.-]+@[\w\.-]+\.\w+$", nuevo_email):
+        email = f"{parte_email}{dominio}".lower()
+
+        if not re.match(r"^[\w\.-]+@[\w\.-]+\.\w+$", email):
             messagebox.showwarning("Error", "Correo no válido.")
             return
 
         db = next(get_session())
-        actualizado = ClienteCRUD.actualizar_cliente(db, old_email, nuevo_nombre, nuevo_email)
+        ClienteCRUD.actualizar_cliente(db, old_email, nombre, email)
         db.close()
 
-        if actualizado:
-            messagebox.showinfo("Éxito", "Cliente actualizado.")
-            self.cargar_clientes()
-        else:
-            messagebox.showwarning("Error", "Error al actualizar cliente.")
+        self.cargar_clientes()
+        messagebox.showinfo("Éxito", "Cliente actualizado correctamente.")
 
 
 
