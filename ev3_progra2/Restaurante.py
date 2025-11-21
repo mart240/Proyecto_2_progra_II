@@ -16,6 +16,14 @@ from menu_pdf import create_menu_pdf
 from ctk_pdf_viewer import CTkPDFViewer
 import os 
 from tkinter.font import nametofont
+from database import get_session
+from crud.cliente_crud import ClienteCRUD
+from crud.pedido_crud import PedidoCRUD
+from database import get_session, engine, Base
+
+# Crear tablas si no existen 
+Base.metadata.create_all(bind=engine)
+
 
 class AplicacionConPestanas(ctk.CTk):
 
@@ -29,7 +37,6 @@ class AplicacionConPestanas(ctk.CTk):
 
         # widget para manejar las pestañas(tabview) y asigna la funcion on_tab_change que se ejecuta cuando cambie de pestaña
         self.tabview = ctk.CTkTabview(self,command=self.on_tab_change) 
-
 
         self.tabview.pack(expand=True, fill="both", padx=10, pady=10)
 
@@ -259,6 +266,7 @@ class AplicacionConPestanas(ctk.CTk):
         self.treeview_clientes = ttk.Treeview(frame_inferior, columns=("ID", "Menu", "Precio Unitario", "Cantidad", "Subtotal"), show="headings")
         self.treeview_clientes.heading("ID", text="ID")
         self.treeview_clientes.heading("Menu", text="Menu")
+        self.treeview_clientes.heading("Precio Unitario", text="Precio Unitario")
         self.treeview_clientes.heading("Cantidad", text="Cantidad")
         self.treeview_clientes.heading("Subtotal", text="Subtotal")
         self.treeview_clientes.pack(pady=10, padx=10, fill="both", expand=True)
@@ -312,7 +320,7 @@ class AplicacionConPestanas(ctk.CTk):
         self.combo_unidad.pack()
 
         # Botones
-        self.boton_crear_cliente = ctk.CTkButton(frame_nombre_col, text="Crear Cliente", command=self.Crar_cliente, fg_color="green")
+        self.boton_crear_cliente = ctk.CTkButton(frame_nombre_col, text="Crear Cliente", command=self.Crear_cliente, fg_color="green")
         self.boton_crear_cliente.pack(pady=10)
 
         self.boton_editar_cliente = ctk.CTkButton(frame_email_col, text="Editar Cliente", command=self.Editar_cliente)
@@ -326,20 +334,126 @@ class AplicacionConPestanas(ctk.CTk):
         frame_inferior.pack(pady=10, padx=10, fill="both", expand=True)
 
         # Treeview para mostrar los clientes
-        self.treeview_clientes = ttk.Treeview(frame_inferior, columns=("Email", "Nombre", "Edad"), show="headings")
+        self.treeview_clientes = ttk.Treeview(frame_inferior, columns=("Email", "Nombre"), show="headings")
         self.treeview_clientes.heading("Email", text="Email")
         self.treeview_clientes.heading("Nombre", text="Nombre")
-        self.treeview_clientes.heading("Edad", text="Edad")
         self.treeview_clientes.pack(pady=10, padx=10, fill="both", expand=True)
-        
-    def Crar_cliente(self):
-        pass
 
+        self.cargar_clientes()
+
+    def cargar_clientes(self):
+        db = next(get_session())
+        datos = ClienteCRUD.leer_clientes(db)
+        db.close()
+
+        # Limpiar tabla
+        self.treeview_clientes.delete(*self.treeview_clientes.get_children())
+
+        # Insertar clientes
+        for c in datos:
+            self.treeview_clientes.insert("", "end", values=(c.email, c.nombre))
+
+
+    def Crear_cliente(self):
+        nombre = self.entry_nombre.get().strip()
+        parte_email = self.entry_email.get().strip()
+        dominio = self.combo_unidad.get()
+
+        # Validar campos vacíos
+        if not nombre or not parte_email:
+            messagebox.showwarning("Error", "Debe ingresar nombre y correo.")
+            return
+
+        # Unir email
+        email = parte_email + dominio
+
+        # Validar formato email
+        if not re.match(r"^[\w\.-]+@[\w\.-]+\.\w+$", email):
+            messagebox.showwarning("Error", "El correo no tiene un formato válido.")
+            return
+
+        db = next(get_session())
+
+        # Validar unicidad con filter + lambda
+        existe = list(filter(lambda c: c.email == email, ClienteCRUD.leer_clientes(db)))
+        if existe:
+            messagebox.showwarning("Error", "El correo ya está registrado.")
+            db.close()
+            return
+
+        # Crear
+        ClienteCRUD.crear_cliente(db, nombre, email)
+        db.close()
+
+        self.cargar_clientes()
+
+        # limpiar
+        self.entry_nombre.delete(0, 'end')
+        self.entry_email.delete(0, 'end')
+        self.combo_unidad.set("@gmail.com")
+
+        messagebox.showinfo("Éxito", "Cliente creado correctamente.")
+
+
+
+    
     def Eliminar_cliente(self):
-        pass
+        seleccion = self.treeview_clientes.selection()
+
+        if not seleccion:
+            messagebox.showwarning("Error", "Seleccione un cliente.")
+            return
+
+        email = self.treeview_clientes.item(seleccion[0], "values")[0]
+
+        db = next(get_session())
+
+        # Validación de pauta: NO eliminar si tiene pedidos
+        cliente = db.query(cliente).filter_by(email=email).first()
+
+        if cliente and cliente.pedidos:
+            messagebox.showwarning("Error", "No se puede eliminar: el cliente tiene pedidos asociados.")
+            db.close()
+            return
+
+        ClienteCRUD.borrar_cliente(db, email)
+        db.close()
+
+        self.cargar_clientes()
+        messagebox.showinfo("Éxito", "Cliente eliminado.")
+
 
     def Editar_cliente(self):
-        pass
+        seleccion = self.treeview_clientes.selection()
+
+        if not seleccion:
+            messagebox.showwarning("Error", "Seleccione un cliente primero.")
+            return
+
+        old_email = self.treeview_clientes.item(seleccion[0], "values")[0]
+
+        nuevo_nombre = self.cli_nombre.get().strip()
+        nuevo_email = self.cli_email.get().strip()
+
+        if not nuevo_nombre or not nuevo_email:
+            messagebox.showwarning("Error", "Debe ingresar nombre y correo.")
+            return
+
+        # Validar formato del nuevo email
+        if not re.match(r"^[\w\.-]+@[\w\.-]+\.\w+$", nuevo_email):
+            messagebox.showwarning("Error", "Correo no válido.")
+            return
+
+        db = next(get_session())
+        actualizado = ClienteCRUD.actualizar_cliente(db, old_email, nuevo_nombre, nuevo_email)
+        db.close()
+
+        if actualizado:
+            messagebox.showinfo("Éxito", "Cliente actualizado.")
+            self.cargar_clientes()
+        else:
+            messagebox.showwarning("Error", "Error al actualizar cliente.")
+
 
 
     def configurar_pestana1(self):
