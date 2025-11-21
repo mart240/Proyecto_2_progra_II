@@ -27,13 +27,6 @@ class AplicacionConPestanas(ctk.CTk):
         nametofont("TkHeadingFont").configure(size=14)  # tamaño de la fuente
         nametofont("TkDefaultFont").configure(size=11)   # tamaño de la fuente
 
-        self.stock = Stock()  # objeto Stock
-        self.menus_creados = set()  # set para guardar los nombres de los menus creados
-
-        self.pedido = Pedido()  # objeto Pedido para manejar menus agregados 
-
-        self.menus = get_default_menus()  # lista de menus predefinidos desde el catalogo
-
         # widget para manejar las pestañas(tabview) y asigna la funcion on_tab_change que se ejecuta cuando cambie de pestaña
         self.tabview = ctk.CTkTabview(self,command=self.on_tab_change) 
 
@@ -67,10 +60,7 @@ class AplicacionConPestanas(ctk.CTk):
             print('Panel de compra')
         if selected_tab == "Cliente":
             self.actualizar_treeview()  # actualiza el treeview para ver el registro
-            print('Cliente')
-        if selected_tab == "Boleta":
-            self.actualizar_treeview()  # actualiza el treeview para ver la boleta
-            print('Boleta')       
+            print('Cliente')    
         if selected_tab == "Graficos":
             self.actualizar_treeview()  # actualiza el treeview para ver los graficos   
             print('Graficos')
@@ -82,7 +72,6 @@ class AplicacionConPestanas(ctk.CTk):
         self.tab1 = self.tabview.add("Menu")
         self.tab4 = self.tabview.add("Panel de compra")  
         self.tab2 = self.tabview.add("Pedido")
-        self.tab5 = self.tabview.add("Boleta")
         self.tab7 = self.tabview.add("Graficos")
         
         # se llama a las funciones que se ejecutan cuando cambie de pestaña
@@ -90,7 +79,6 @@ class AplicacionConPestanas(ctk.CTk):
         self.configurar_pestana2()
         self.configurar_pestana3()
         self._configurar_pestana_crear_menu()
-        self._configurar_pestana_ver_boleta()
         self._configurar_pestana_cliente()
         self._configurar_pestana_ver_graficos()
 
@@ -353,45 +341,6 @@ class AplicacionConPestanas(ctk.CTk):
     def Editar_cliente(self):
         pass
 
-    def _configurar_pestana_ver_boleta(self):
-        contenedor = ctk.CTkFrame(self.tab5)
-        contenedor.pack(expand=True, fill="both", padx=10, pady=10)
-    
-        boton_boleta = ctk.CTkButton(
-            contenedor,
-            text="Mostrar Boleta (PDF)",
-            command=self.mostrar_boleta
-        )
-        boton_boleta.pack(pady=10)
-    
-        self.pdf_frame_boleta = ctk.CTkFrame(contenedor)
-        self.pdf_frame_boleta.pack(expand=True, fill="both", padx=10, pady=10)
-    
-        self.pdf_viewer_boleta = None
-
-    def mostrar_boleta(self):
-        try:
-            pdf_path = "boleta.pdf"
-            if not os.path.exists(pdf_path):
-                CTkMessagebox(title="Error", message="Primero debes generar una boleta.", icon="warning")
-                return
-
-            # Si ya hay un visor anterior, se destruye
-            if self.pdf_viewer_boleta is not None:
-                try:
-                    self.pdf_viewer_boleta.pack_forget()
-                    self.pdf_viewer_boleta.destroy()
-                except Exception:
-                    pass
-                self.pdf_viewer_boleta = None
-
-            abs_pdf = os.path.abspath(pdf_path)
-            self.pdf_viewer_boleta = CTkPDFViewer(self.pdf_frame_boleta, file=abs_pdf)
-            self.pdf_viewer_boleta.pack(expand=True, fill="both")
-
-        except Exception as e:
-            CTkMessagebox(title="Error", message=f"No se pudo mostrar la boleta.\n{e}", icon="warning")
-
 
     def configurar_pestana1(self):
 
@@ -633,26 +582,39 @@ class AplicacionConPestanas(ctk.CTk):
         frame_intermedio = ctk.CTkFrame(self.tab2)
         frame_intermedio.pack(side="top", fill="x", padx=10, pady=5)
 
-        self.tarjetas_frame = ctk.CTkFrame(frame_superior)
-        self.tarjetas_frame.pack(expand=True, fill="both", padx=10, pady=10)
+        label_filtro = ctk.CTkLabel(frame_superior, text="Filtro:")
+        label_filtro.pack(side="left", padx=10)
+        self.entry_filtro = ctk.CTkEntry(frame_superior)
+        self.entry_filtro.pack(side="left", padx=10)
 
-        self.boton_eliminar_menu = ctk.CTkButton(frame_intermedio, text="Eliminar Menú", command=self.eliminar_menu, fg_color="red")
+        self.boton_filtrar = ctk.CTkButton(frame_superior, text="Filtrar", command=self.filtrar_menus)
+        self.boton_filtrar.pack(side="left", padx=10)
+        
+        self.boton_eliminar_menu = ctk.CTkButton(frame_superior, text="Eliminar Menú", command=self.eliminar_menu, fg_color="red")
         self.boton_eliminar_menu.pack(side="right", padx=10)
 
-        self.label_total = ctk.CTkLabel(frame_intermedio, text="Total: $0.00", anchor="e", font=("Helvetica", 12, "bold"))
-        self.label_total.pack(side="right", padx=10)
+        self.treeview_menu = ttk.Treeview(frame_intermedio, columns=("ID", "Fecha", "Cliente", "Total"), show="headings")
+        self.treeview_menu.heading("ID", text="ID")
+        self.treeview_menu.heading("Fecha", text="Fecha")
+        self.treeview_menu.heading("Cliente", text="Cliente")
+        self.treeview_menu.heading("Total", text="Total")
+        self.treeview_menu.pack(expand=True, fill="both", padx=10, pady=10)
 
         frame_inferior = ctk.CTkFrame(self.tab2)
         frame_inferior.pack(side="bottom", fill="both", expand=True, padx=10, pady=10)
 
-        self.treeview_menu = ttk.Treeview(frame_inferior, columns=("Nombre", "Cantidad", "Precio Unitario"), show="headings")
-        self.treeview_menu.heading("Nombre", text="Nombre del Menú")
+        label_arriba = ctk.CTkLabel(frame_inferior, text="Detalle del pedido:")
+        label_arriba.pack(side="top", pady=10)
+
+        self.treeview_menu = ttk.Treeview(frame_inferior, columns=("Menu", "Cantidad", "Precio Unitario", "Subtotal"), show="headings")
+        self.treeview_menu.heading("Menu", text="Menu")
         self.treeview_menu.heading("Cantidad", text="Cantidad")
         self.treeview_menu.heading("Precio Unitario", text="Precio Unitario")
+        self.treeview_menu.heading("Subtotal", text="Subtotal")
         self.treeview_menu.pack(expand=True, fill="both", padx=10, pady=10)
 
-        self.boton_generar_boleta=ctk.CTkButton(frame_inferior,text="Generar Boleta",command=self.generar_boleta)
-        self.boton_generar_boleta.pack(side="bottom",pady=10)
+    def filtrar_menus(self):
+        pass
 
     def _configurar_pestana_ver_graficos(self):
         label = ctk.CTkLabel(self.tab7, text="Graficos")
